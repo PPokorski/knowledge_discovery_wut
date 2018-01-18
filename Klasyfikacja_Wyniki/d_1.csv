@@ -1,0 +1,5 @@
+"","absences.x","G2.x","G3.x","age","G1.x","goout.x","G1.y","goout.y","G2.y","G3.y","absences.y","studytime.y","Mjob","Fjob","studytime.x","health.y","health.x","reason","Fedu","freetime.y","Medu","freetime.x","famrel.x","famrel.y","sex","traveltime.y","traveltime.x","schoolsup.y","paid.x","schoolsup.x","guardian.x","guardian.y","activities.y","nursery","activities.x","failures.x","famsup.x","famsize","famsup.y","address","internet","romantic.x","Pstatus","romantic.y","paid.y","failures.y","school","higher.x","higher.y"
+"abstainer",0.01,0,0,0.01,0,0.01,0,0.01,0,0,0,0.01,0,0,0.01,0,0,0,0,0,0,0,0,0,0.01,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+"alcoholic",0,0,0,0,0,0.01,0.01,0.01,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+"MeanDecreaseAccuracy",0.01,0,0,0,0,0.01,0,0.01,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+"MeanDecreaseGini",9.24,8.31,8.2,6.99,6.84,6.83,6.81,6.7,6.7,6.39,5.86,5.64,5.55,5.4,5.06,4.53,4.34,4.23,4.07,4.05,3.89,3.86,3.79,3.71,2.84,2.5,2.4,2.13,1.98,1.79,1.79,1.73,1.62,1.59,1.54,1.5,1.41,1.41,1.33,1.25,1.24,1.14,1.09,1.05,0.99,0.78,0.78,0.2,0.14

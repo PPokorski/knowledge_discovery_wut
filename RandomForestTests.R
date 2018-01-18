@@ -201,14 +201,14 @@ for(ns.id in seq_along(nodesizes))
     nodesizes.treescounts[ns.id,ts.id] = mean(tests.err.rate) 
     #ndbigtree to liczba wezlow drzewa dla kazdego drzewa. 
     bigtree.length = mean(tests.ndbigtree)
-    #Najwieksza srednia dlugosc drzewa - do wypisywania na konsole, żeby zobrazować działanie
+    #Najwieksza srednia dlugosc drzewa - do wypisywania na konsole, tylko, żeby na szybko zarysować liczbę drzew
     max.bigtree.length = max(c(bigtree.length,max.bigtree.length))
   }
   print(paste("dla nodesize: ",nodesizes[ns.id],"Najwieksza średnia dł. drzew: ", max.bigtree.length))
 }
 colnames(nodesizes.treescounts) = trees
 rownames(nodesizes.treescounts) = nodesizes
-write.csv(t(round(nodesizes.treescounts,2)), file = paste(directory,"/Klasyfikacja_Wyniki/c_1.csv", sep=""))
+#write.csv(t(round(nodesizes.treescounts,2)), file = paste(directory,"/Klasyfikacja_Wyniki/c_1.csv", sep=""))
 #ZAMIENIC trees na trees
 p.nodesizes.treescounts = plot_ly(z = nodesizes.treescounts,
                                   type="heatmap", colorscale = "Greys", y=nodesizes, x=trees) %>%
@@ -224,5 +224,5 @@ importance = forest$importance
 
 importance.sorted = importance[order(-importance[,"MeanDecreaseGini"]),]
 importance.sorted
-
+#write.csv(t(round(importance.sorted,2)), file = paste(directory,"/Klasyfikacja_Wyniki/d_1.csv", sep=""))
 #importanceSD = forest$importanceSD
