@@ -135,14 +135,20 @@ ooberrs = vector(length=length(rf.ids))
 for(id in rf.ids)
 {
   ctree = 500
-  forest = randomForest(Alc ~ .,data = d.alc, ntree = ctree, mtry=id)
-  #blad oob drzew liczac do itego drzewa w lesie znajduje sie na itej pozycji err.rate
-  ooberrs[id] = forest$err.rate[[ctree]]
+  tests = numeric(20)
+  for(idt in seq_along(tests))
+  {
+    forest = randomForest(Alc ~ .,data = d.alc, ntree = ctree, mtry=id)
+    #blad oob drzew liczac do itego drzewa w lesie znajduje sie na itej pozycji err.rate
+    tests[idt] = forest$err.rate[[ctree]] 
+  }
+  ooberrs[id] = mean(tests) 
 }
 mtry.obb = data.frame(rf.ids,ooberrs)
+#write.csv(t(round(mtry.obb,3)), file = paste(directory,"/Klasyfikacja_Wyniki/b_1.csv", sep=""))
 #Wykres zależności Błąd OOB(Liczba losowo wybieranych parametrow przy podziale wezla)
 p.mtry.obb = plot_ly(mtry.obb, x = ~rf.ids, y = ~ooberrs, type = 'scatter', mode = 'lines') %>%
-  layout(title = "Zależnośc błędu OOB od liczby wybieranych atrbutów przy podziale", 
+  layout(title = "Błąd OOB od liczby wybieranych atrbutów", 
          xaxis = list(title="Liczba losowych atrybutów używanych do podziału węzła"),
          yaxis=list(title="Estymacja błędu OOB"))
 p.mtry.obb
@@ -153,6 +159,7 @@ p.mtry.obb
 #Mało długich drzew
 #Dużo długich drzew
 #nodesize
+#Będę analizował zależność BłądOOB (liczba drzew, długość drzew)
 
 #generacja trees - wektora liczb drzew
 min.trees=2
@@ -160,14 +167,14 @@ max.trees=500
 #Liczba modeli:
 trees.count = 16
 trees.ids = 1:trees.count
-#podstawa logarytmu i skali wykladniczej (bo fajnie by bylo, zeby podzialka byla wykladnicza)
+#podstawa logarytmu i skali wykladniczej
 lbase = 2
-#Wektor przechowujący ilość drzew dla każdego z modeli:
+#Wektor przechowujący ilość drzew dla każdej długości:
 trees = lbase^seq(log(min.trees,lbase), log(max.trees,lbase), length=trees.count)
 #Zaokraglenia, aby liczby drzew były całkowite:
 trees = as.integer(trees)
 
-#generacla nodesize.counts - wektora wielkosci w lisciach
+#generacja nodesize.counts - wektora przechowującego różne wielkosci liści
 min.nodesize = 1
 max.nodesize = 200
 nodesizes.count = 10
@@ -176,22 +183,32 @@ nodesizes = as.integer(nodesizes)
 
 nodesizes.treescounts = matrix(nrow = nodesizes.count, ncol = trees.count)
 
-for(ns.id in 1:length(nodesizes))
+for(ns.id in seq_along(nodesizes))
 {
   max.bigtree.length = 0
-  for(ts.id in 1:length(trees))
+  for(ts.id in seq_along(trees))
   {
-    forest = randomForest(Alc ~ .,data = d.alc, ntree = trees[[ts.id]], nodesize = nodesizes[[ns.id]])
-    nodesizes.treescounts[ns.id,ts.id] = forest$err.rate[[trees[[ts.id]]]]
-    #ndbigtree to liczba wezlow drzewa dla kazdego drzewa. max(...) daje dlugosc najdluzszego drzewa w lesie
-    bigtree.length = min(forest$forest$ndbigtree)
+    tests.err.rate = numeric(20)
+    tests.ndbigtree = numeric(20)
+    for(idt in seq_along(tests.err.rate))
+    {
+      forest = randomForest(Alc ~ .,data = d.alc, ntree = trees[[ts.id]], nodesize = nodesizes[[ns.id]])
+      tests.err.rate[idt] = forest$err.rate[[trees[[ts.id]]]]
+      #srednia liczba wezlow drzewa
+      tests.ndbigtree[idt] =  mean(forest$forest$ndbigtree)
+    }
+    
+    nodesizes.treescounts[ns.id,ts.id] = mean(tests.err.rate) 
+    #ndbigtree to liczba wezlow drzewa dla kazdego drzewa. 
+    bigtree.length = mean(tests.ndbigtree)
+    #Najwieksza srednia dlugosc drzewa - do wypisywania na konsole, żeby zobrazować działanie
     max.bigtree.length = max(c(bigtree.length,max.bigtree.length))
   }
-  print(paste("dla nodesize: ",nodesizes[ns.id],"Rozmiar najwiekszego drzewa: ", max.bigtree.length))
+  print(paste("dla nodesize: ",nodesizes[ns.id],"Najwieksza średnia dł. drzew: ", max.bigtree.length))
 }
 colnames(nodesizes.treescounts) = trees
 rownames(nodesizes.treescounts) = nodesizes
-
+write.csv(t(round(nodesizes.treescounts,2)), file = paste(directory,"/Klasyfikacja_Wyniki/c_1.csv", sep=""))
 #ZAMIENIC trees na trees
 p.nodesizes.treescounts = plot_ly(z = nodesizes.treescounts,
                                   type="heatmap", colorscale = "Greys", y=nodesizes, x=trees) %>%
