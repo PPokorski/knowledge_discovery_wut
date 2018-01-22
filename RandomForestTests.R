@@ -3,6 +3,7 @@
 #instalacja: install.packages('randomForest')
 #dodanie biblioteki z lasem losowym:
 library(randomForest)
+library(cluster)
 library(plotly)
 
 #packageVersion('plotly') #sprawdzenie wersji plotly
@@ -15,12 +16,9 @@ d1=read.table(paste(directory,"/student-mat.csv", sep=""),sep=",",header=TRUE)
 d2=read.table(paste(directory,"/student-por.csv", sep=""),sep=",",header=TRUE)
 d3=merge(d1,d2,by=c("school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet","Dalc","Walc"))
 
-#Zgodnie z wynikami grupowania, zamiast kolumn Dalc i Walc tworzona jest kolumna alcoholic:
-#Dodanie kolumny alc, i ustawienie 1 i 2 w zależności od parametrów Dalc i Walc
-d3$Alc[d3$Dalc==1 & d3$Walc == 1] = "abstainer" #Niepijacy
-d3$Alc[!(d3$Dalc==1 & d3$Walc == 1)] = "alcoholic" #Pijacy
-#Zrobienie z kolumny typu wyliczeniowego:
-d3$Alc = as.factor(d3$Alc)
+grouping_table = d3[,c("Dalc", "Walc")]
+fit = kmeans(grouping_table, 2)
+d3$Alc = factor(fit$cluster)
 #Utworzenie d.alcoholics, która stanowi tabelę ostatecznie stosowaną do nauczania 
 #przez usunięcie kolumn Dalc i Walc
 d.alc = d3[ , -which(names(d3) %in% c("Dalc","Walc"))]
